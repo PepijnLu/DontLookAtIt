@@ -151,7 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b05b8fe834b5a60409adb85419a9ab98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  filePath: C:\python\eyetracking\eye_tracking_data.json
+  filePath: C:\Unity Projects\DontLookAtIt\Assets\EyeTracking\eye_tracking_data.json
 --- !u!4 &516304606
 Transform:
   m_ObjectHideFlags: 0

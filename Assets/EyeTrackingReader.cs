@@ -1,9 +1,12 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using UnityEngine;
 
 public class EyeTrackingReader : MonoBehaviour
 {
+    Process eyeTracking;
+
     [System.Serializable]
     public class EyeTrackingData
     {
@@ -17,7 +20,7 @@ public class EyeTrackingReader : MonoBehaviour
         public EyeTrackingData[] data;
     }
 
-    public string filePath = "C:/path/to/your/eye_tracking_data.json";  // Update with the correct path to your JSON file
+    string filePath = System.IO.Path.Combine(Application.dataPath, "EyeTracking", "eye_tracking_data.json");
     private long lastReadPosition = 0;
 
     void Start()
@@ -27,6 +30,15 @@ public class EyeTrackingReader : MonoBehaviour
         {
             lastReadPosition = new FileInfo(filePath).Length;
         }
+
+        string exePath = System.IO.Path.Combine(Application.dataPath, "EyeTracking", "EyeTracking.exe");
+        // Process.Start(exePath);
+
+        eyeTracking = new Process();
+        eyeTracking.StartInfo.FileName = exePath;
+        eyeTracking.StartInfo.WorkingDirectory = System.IO.Path.Combine(Application.dataPath, "EyeTracking");
+        eyeTracking.StartInfo.UseShellExecute = true; // Required when setting WorkingDirectory
+        eyeTracking.Start();
     }
 
     void Update()
@@ -65,12 +77,21 @@ public class EyeTrackingReader : MonoBehaviour
             // Display the new data in the Unity console
             foreach (EyeTrackingData data in dataList.data)
             {
-                Debug.Log("Timestamp: " + data.timestamp + ", Eye State: " + data.eye_state);
+                UnityEngine.Debug.Log("Timestamp: " + data.timestamp + ", Eye State: " + data.eye_state);
             }
         }
         catch (Exception ex)
         {
-            Debug.LogError("JSON Parsing error: " + ex.Message);
+            UnityEngine.Debug.LogError("JSON Parsing error: " + ex.Message);
+        }
+    }
+
+    void OnApplicationQuit()
+    {
+        if (eyeTracking != null && !eyeTracking.HasExited)
+        {
+            eyeTracking.Kill(); // Force closes the program
+            eyeTracking.Dispose(); // Cleanup resources
         }
     }
 }
